@@ -1,130 +1,85 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import Desktop from "./components/Desktop";
+import Taskbar from "./components/Taskbar";
+import Window from "./components/Window";
+import ChatApp from "./apps/ChatApp";
+import FileManagerApp from "./apps/FileManagerApp";
+import WorkflowApp from "./apps/WorkflowApp";
+import HistoryApp from "./apps/HistoryApp";
+import { ToastProvider } from "./components/ToastContext";
+import "./components/Toast.css";
 import "./App.css";
 
+const APPS = {
+  chat: { title: "AI Chat", icon: "💬", component: ChatApp },
+  files: { title: "File Manager", icon: "📂", component: FileManagerApp },
+  workflow: { title: "Workflows", icon: "⚙️", component: WorkflowApp },
+  history: { title: "History", icon: "🕓", component: HistoryApp },
+};
+
 function App() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const fileInputRef = useRef();
+  const [openWindows, setOpenWindows] = useState([]);
 
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("http://127.0.0.1:8000/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      setUploadedFile(file.name);
-      setMessages((prev) => [
-        ...prev,
-        { role: "system", text: `✅ "${file.name}" uploaded and ingested.` },
-      ]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "system", text: `❌ Failed to upload "${file.name}".` },
-      ]);
-    } finally {
-      setUploading(false);
+  const openApp = (appId) => {
+    if (openWindows.find((w) => w.id === appId)) {
+      focusWindow(appId);
+      return;
     }
+    setOpenWindows((prev) => [
+      ...prev,
+      { id: appId, minimized: false, zIndex: prev.length + 1 },
+    ]);
   };
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+  const closeWindow = (appId) => {
+    setOpenWindows((prev) => prev.filter((w) => w.id !== appId));
+  };
 
-    const userMessage = { role: "user", text: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setLoading(true);
+  const minimizeWindow = (appId) => {
+    setOpenWindows((prev) =>
+      prev.map((w) => (w.id === appId ? { ...w, minimized: !w.minimized } : w))
+    );
+  };
 
-    try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/agent?q=${encodeURIComponent(input)}`
+  const focusWindow = (appId) => {
+    setOpenWindows((prev) => {
+      const maxZ = Math.max(...prev.map((w) => w.zIndex), 0);
+      return prev.map((w) =>
+        w.id === appId ? { ...w, zIndex: maxZ + 1, minimized: false } : w
       );
-      const data = await res.json();
-      setMessages((prev) => [
-        ...prev,
-        { role: "agent", text: data.answer, source: uploadedFile },
-      ]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "agent", text: "Error connecting to the server." },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") sendMessage();
+    });
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <h1 className="chat-title">AI Knowledge Base</h1>
-        <div className="upload-area">
-          <button
-            className="upload-btn"
-            onClick={() => fileInputRef.current.click()}
-            disabled={uploading}
+    <ToastProvider>
+      <div className="os-container">
+        <Desktop onOpenApp={openApp} apps={APPS} />
+      {openWindows.map((win) => {
+        const app = APPS[win.id];
+        const AppComponent = app.component;
+        return (
+          <Window
+            key={win.id}
+            title={app.title}
+            icon={app.icon}
+            minimized={win.minimized}
+            zIndex={win.zIndex}
+            onClose={() => closeWindow(win.id)}
+            onMinimize={() => minimizeWindow(win.id)}
+            onFocus={() => focusWindow(win.id)}
           >
-            {uploading ? "Uploading..." : "Upload Document"}
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleUpload}
-            accept=".txt,.pdf,.docx"
-            style={{ display: "none" }}
-          />
-          {uploadedFile && (
-            <span className="uploaded-label">📄 {uploadedFile}</span>
-          )}
-        </div>
-      </div>
-
-      <div className="chat-messages">
-        {messages.map((msg, i) => (
-          <div key={i} className={`message ${msg.role}`}>
-            <div>
-              <span className="bubble">{msg.text}</span>
-              {msg.source && (
-                <div className="source-label">Source: {msg.source}</div>
-              )}
-            </div>
-          </div>
-        ))}
-        {loading && (
-          <div className="message agent">
-            <span className="bubble">Thinking...</span>
-          </div>
-        )}
-      </div>
-
-      <div className="chat-input">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask a question..."
-        />
-        <button onClick={sendMessage} disabled={loading}>
-          Send
-        </button>
-      </div>
+            <AppComponent />
+          </Window>
+        );
+      })}
+      <Taskbar
+        apps={APPS}
+        openWindows={openWindows}
+        onAppClick={openApp}
+        onWindowClick={minimizeWindow}
+      />
     </div>
+    </ToastProvider>
   );
 }
 

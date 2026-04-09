@@ -1,0 +1,103 @@
+.file-manager {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  background: #fafafa;
+  overflow-y: auto;
+}
+
+.file-manager__title {
+  font-size: 1.1rem;
+  color: #1a1a2e;
+}
+
+.file-manager__desc {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.file-manager__supported {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.file-manager__upload-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #1a1a2e;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: center;
+  width: fit-content;
+}
+
+.file-manager__upload-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.file-manager__status {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+
+.file-manager__status--success { background: #e8f5e9; color: #2e7d32; }
+.file-manager__status--error { background: #fdecea; color: #c62828; }
+.file-manager__status--info { background: #e3f2fd; color: #1565c0; }
+
+.file-manager__docs {
+  margin-top: 8px;
+}
+
+.file-manager__docs-title {
+  font-size: 0.9rem;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+}
+
+.file-manager__empty {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.file-manager__doc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-manager__doc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.file-manager__doc-icon {
+  font-size: 1.3rem;
+}
+
+.file-manager__doc-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-manager__doc-name {
+  font-size: 0.88rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.file-manager__doc-date {
+  font-size: 0.75rem;
+  color: #999;
+}

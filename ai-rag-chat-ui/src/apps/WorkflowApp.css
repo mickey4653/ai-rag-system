@@ -1,0 +1,73 @@
+.workflow-app {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  background: #fafafa;
+}
+
+.workflow-app__title {
+  font-size: 1.1rem;
+  color: #1a1a2e;
+}
+
+.workflow-app__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.workflow-app__tab {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.workflow-app__tab.active {
+  background: #1a1a2e;
+  color: white;
+  border-color: #1a1a2e;
+}
+
+.workflow-app__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.workflow-app__input {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.workflow-app__run {
+  padding: 10px;
+  background: #1a1a2e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.workflow-app__run:disabled { opacity: 0.5; }
+
+.workflow-app__result {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #333;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  max-height: 280px;
+}
