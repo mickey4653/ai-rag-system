@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def ask_question(query, index_name="ai-rag-system", top_k=3):
+def ask_question(query, index_name="ai-rag-system", top_k=6):
     # Embeddings (must match what was used during ingestion)
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small", dimensions=1024)
 

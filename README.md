@@ -1,36 +1,95 @@
-# AI RAG System
+# AI RAG System — AI Operating System
 
-A Retrieval-Augmented Generation (RAG) system that lets you upload documents and ask questions against them using AI. Built with FastAPI, LangChain, Pinecone, n8n, and a React chat UI.
+A full-stack AI platform built as a browser-based desktop OS. Upload documents, query them with AI, run automations, and manage everything from a drag-and-drop desktop interface.
 
-## How It Works
+## Architecture
 
 ```
-Document uploaded → Ingested into Pinecone → User asks question → AI agent retrieves context → Answer returned
+React Desktop UI (ai-rag-chat-ui)
+        ↓
+FastAPI Backend (app.py)
+        ↓
+AI Router (router.py)
+    ├── RAG — Pinecone + LangChain
+    ├── Agent — Tool-based reasoning
+    ├── Chat History — SQLite
+    └── n8n — Workflow automation
 ```
 
 ## Stack
 
 - **FastAPI** — backend API
-- **LangChain** — document loading, text splitting, embeddings, agent reasoning
-- **Pinecone** — vector database for storing and retrieving embeddings
-- **OpenAI** — embeddings (`text-embedding-3-small`) and chat (`gpt-3.5-turbo`)
-- **n8n** — workflow automation (auto-ingest on file drop, webhook-based Q&A)
-- **React** — chat UI with file upload and source attribution
+- **LangChain** — document loading, embeddings, agent reasoning
+- **Pinecone** — vector database
+- **OpenAI** — embeddings (`text-embedding-3-small`) and chat (`gpt-4o-mini`)
+- **SQLite** — persistence (chat history, documents, workflow logs)
+- **n8n** — workflow automation
+- **React** — desktop OS UI with draggable windows
 
 ## Project Structure
 
 ```
 ai-rag-system/
-├── app.py              # FastAPI app with all endpoints
-├── agent.py            # AI agent with tool-based reasoning
-├── ingest.py           # Document loading and Pinecone ingestion
+├── app.py              # FastAPI app — all endpoints
+├── router.py           # AI Router — intent detection and routing
+├── agent.py            # AI Agent — tool-based reasoning
+├── ingest.py           # Document ingestion pipeline
 ├── query.py            # RAG query against Pinecone
-├── main.py             # Standalone script (initial prototype)
-├── load_data.py        # Utility script for loading documents
-├── sample.txt          # Sample document for testing
-├── ai-rag-chat-ui/     # React chat interface
-└── uploads/            # Uploaded documents (gitignored)
+├── database.py         # SQLite persistence layer
+├── main.py             # Standalone prototype script
+├── load_data.py        # Utility script
+├── sample.txt          # Sample document
+├── data.db             # SQLite database (auto-created)
+├── uploads/            # Uploaded documents (gitignored)
+└── ai-rag-chat-ui/     # React desktop OS UI
+    └── src/
+        ├── App.js
+        ├── apps/
+        │   ├── ChatApp.js        # AI chat with history
+        │   ├── FileManagerApp.js # Upload + document list
+        │   ├── WorkflowApp.js    # Run RAG/agent workflows
+        │   └── HistoryApp.js     # Browse chat/doc/workflow logs
+        └── components/
+            ├── Desktop.js        # Desktop with app icons
+            ├── Window.js         # Draggable windows
+            ├── Taskbar.js        # Bottom taskbar
+            └── ToastContext.js   # Toast notifications
 ```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/upload` | Upload and ingest a document |
+| POST | `/ingest-path` | Ingest a document already on disk |
+| GET | `/chat` | AI Router — smart intent-based response |
+| GET | `/ask` | Direct RAG query |
+| GET | `/agent` | AI agent with tool reasoning |
+| GET | `/history/chat` | Chat history |
+| GET | `/history/documents` | Uploaded documents |
+| GET | `/history/workflows` | Workflow logs |
+
+## AI Router Intents
+
+The `/chat` endpoint automatically detects intent and routes accordingly:
+
+| Intent | Trigger example | Action |
+|--------|----------------|--------|
+| `KNOWLEDGE_BASE` | "What are Michael's skills?" | RAG query |
+| `SUMMARIZE` | "Summarize the document" | RAG + summarization |
+| `CHAT_HISTORY` | "What did I ask before?" | SQLite history lookup |
+| `LIST_DOCUMENTS` | "List my uploaded files" | SQLite documents query |
+| `N8N_WORKFLOW` | "Run the ask workflow" | n8n webhook trigger |
+| `GENERAL` | Anything else | Direct LLM response |
+
+## Desktop Apps
+
+| App | Description |
+|-----|-------------|
+| 💬 AI Chat | Chat with the AI router, loads previous history |
+| 📂 File Manager | Upload documents, view ingested files |
+| ⚙️ Workflows | Run RAG or agent queries directly |
+| 🕓 History | Browse chat, document, and workflow logs |
 
 ## Setup
 
@@ -49,14 +108,19 @@ OPENAI_API_KEY=your_openai_api_key
 PINECONE_API_KEY=your_pinecone_api_key
 ```
 
-### 3. Install and run n8n
+### 3. Start FastAPI
 
 ```bash
-npm install -g n8n
+uvicorn app:app --reload
+```
+
+### 4. Start n8n
+
+```bash
 n8n start
 ```
 
-### 4. Install React dependencies and start UI
+### 5. Start the React desktop UI
 
 ```bash
 cd ai-rag-chat-ui
@@ -64,35 +128,8 @@ npm install
 npm start
 ```
 
-### 5. Start FastAPI
-
-```bash
-uvicorn app:app --reload
-```
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/upload` | Upload and ingest a document |
-| POST | `/ingest-path` | Ingest a document already on disk by path |
-| GET | `/ask` | Query the knowledge base directly |
-| GET | `/agent` | Query via AI agent with tool reasoning |
-
-## n8n Workflows
-
-### Upload Workflow
-```
-Local File Trigger (watches /uploads) → HTTP Request (POST /ingest-path)
-```
-
-### Ask Workflow
-```
-Webhook (GET /webhook/ask?q=...) → HTTP Request (GET /ask) → Respond to Webhook
-```
+Open `http://localhost:3000`
 
 ## Supported File Types
 
-- `.pdf`
-- `.txt`
-- `.docx`
+`.pdf` `.txt` `.docx`

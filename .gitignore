@@ -5,6 +5,9 @@ __pycache__/
 *.pyo
 .env
 
+# Database
+data.db
+
 # Node
 ai-rag-chat-ui/node_modules/
 chat-ui/node_modules/
@@ -13,6 +16,6 @@ ai-rag-chat-ui/build/
 # Uploads
 uploads/
 
-# Pinecone / misc
+# Misc
 *.log
 .DS_Store
