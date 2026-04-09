@@ -1,0 +1,18 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Node
+ai-rag-chat-ui/node_modules/
+chat-ui/node_modules/
+ai-rag-chat-ui/build/
+
+# Uploads
+uploads/
+
+# Pinecone / misc
+*.log
+.DS_Store
