@@ -1,0 +1,94 @@
+{
+  "name": "ai-rag-system--ask",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "ask",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2bf470e9-2295-4c04-86df-545f16b29b8d",
+      "name": "Webhook",
+      "webhookId": "5a38a866-ab14-4115-b4bb-6ecdf5e6aca6"
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:8000/ask",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.query.q }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "26ebe820-0e39-48d6-b8dc-2eafb0a6cb76",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json[\"answer\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        440,
+        0
+      ],
+      "id": "2e31d1b8-41c7-4170-af17-757568bfb5c2",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7842b88f-da5c-42cf-adab-3610e6abbb2d",
+  "meta": {
+    "instanceId": "6f977e7c28bd3b161fc0f89f36d1b8446b737067930a4ee8dd7dab6e17b5a8dc"
+  },
+  "id": "2kWQq67DaQGQLrDw",
+  "tags": []
+}

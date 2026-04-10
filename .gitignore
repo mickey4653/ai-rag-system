@@ -16,6 +16,9 @@ ai-rag-chat-ui/build/
 # Uploads
 uploads/
 
+# Docker
+.dockerignore
+
 # Misc
 *.log
 .DS_Store

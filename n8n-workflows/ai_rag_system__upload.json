@@ -1,0 +1,72 @@
+{
+  "name": "ai-rag-system--upload",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/ingest-path",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "path",
+              "value": "={{ $json.path }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "f32da864-e2a1-4e31-ae89-a408294e4bf5",
+      "name": "Upload Document Request"
+    },
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "C:\\Users\\adeni\\Documents\\My Innovative Mind Projects\\AI RAG System\\ai-rag-system\\uploads",
+        "events": [
+          "add"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        0
+      ],
+      "id": "6a6164d9-1129-4c66-a868-5f1ab39c9f5e",
+      "name": "Local File Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Local File Trigger": {
+      "main": [
+        [
+          {
+            "node": "Upload Document Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "af3fbe91-c5a2-4c0e-a0a8-df214f000c30",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f977e7c28bd3b161fc0f89f36d1b8446b737067930a4ee8dd7dab6e17b5a8dc"
+  },
+  "id": "2WTng8wg8M7qILKz",
+  "tags": []
+}
